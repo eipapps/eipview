@@ -3,7 +3,7 @@ import Router from "vue-router";
 import Home from "./views/Home.vue";
 import { auth } from "firebase/app";
 import session from "./store/modules/session";
-import { async } from "q";
+
 Vue.use(Router);
 
 let router = new Router({
