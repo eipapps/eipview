@@ -186,8 +186,8 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import moment from "moment";
-import session from "@/store/modules/session.js";
+
+import {format} from "date-fns"
 import { directive as onClickaway } from "vue-clickaway";
 export default {
 
@@ -207,7 +207,7 @@ export default {
       initials: "",
       progress: 0,
       timeOut: {},
-      now: moment().format("LLL")
+      now: format(new Date(), "LLL")
     };
   },
   methods: {

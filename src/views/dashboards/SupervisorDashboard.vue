@@ -128,8 +128,8 @@
 </template>
 
 <script>
-import moment from "moment";
-import { mapGetters, mapActions, mapMutation } from "vuex";
+
+import { mapGetters, mapActions } from "vuex";
 import { directive as onClickaway } from "vue-clickaway";
 import SendNotification from "@/components/utilities/SendNotification.vue";
 import memberCarousel from "@/components/utilities/memberCarousel.vue";

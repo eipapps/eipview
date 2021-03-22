@@ -428,7 +428,7 @@ import { mapGetters, mapActions } from "vuex";
 import servicesScreen from "@/components/utilities/servicesScreen.vue";
 import memberCarousel from "@/components/utilities/memberCarousel.vue";
 import Tasks from "@/components/utilities/tasks.vue";
-import moment from "moment";
+import {format, subDays} from "date-fns";
 export default {
   components: {
     servicesScreen,
@@ -453,21 +453,12 @@ export default {
       }
     ],
     labels: [
-      moment(new Date())
-        .subtract(5, "days")
-        .format("MMM D"),
-      moment(new Date())
-        .subtract(4, "days")
-        .format("MMM D"),
-      moment(new Date())
-        .subtract(3, "days")
-        .format("MMM D"),
-      moment(new Date())
-        .subtract(2, "days")
-        .format("MMM D"),
-      moment(new Date())
-        .subtract(1, "days")
-        .format("MMM D")
+      
+        format(subDays(new Date(), 5), "mmm d"),
+    format(subDays(new Date(), 4), "mmm d"),
+        format(subDays(new Date(), 3), "mmm d"),
+       format(subDays(new Date(), 2), "mmm d"),
+      format(subDays(new Date(), 1), "mmm d"),
     ],
     value: [10, 10, 8, 9, 5],
     type: "month",
@@ -510,7 +501,7 @@ export default {
         value: "apellido"
       },
       {
-        text: moment(new Date()).format("MMM Do"),
+        text: format(new Date(),"mmm do"),
         align: "left",
         value: "today"
       },
@@ -566,7 +557,7 @@ export default {
   }),
   methods: {
     momenize() {
-      return moment(new Date()).format("MMM Do");
+      return format(new Date(),"mmm do");
     },
     getEvents({ start, end }) {
       const events = [];

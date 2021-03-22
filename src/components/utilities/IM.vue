@@ -243,9 +243,9 @@
 </template>
 
 <script>
-import moment from "moment";
+
+import {format} from "date-fns";
 import socket from "socket.io-client";
-import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -269,16 +269,14 @@ export default {
      * @param date:Date
      */
     formatDate(date) {
-      return moment(date)
-        .locale("es")
-        .format("D MMMM YYYY");
+      return format(new Date(date), "d/m/yyyy");
     },
     /**
      * @function formatDate(date) formats the date to hh:mm a @example 12:00 pm
      * @param date:Date
      */
     formatTime(time) {
-      return moment(time).format("hh:mm a");
+      return format(new Date(time),"hh:mm a");
     },
     // opens the private message component
     openIM(receivedParticipant) {
@@ -301,7 +299,7 @@ export default {
      * Emits a message socket with opens the channel for the first time {to: uid, from:uid, body: String}
      */
     startPrivateChat() {
-      console.log('startPrivateChat')
+      // console.log('startPrivateChat')
       this.io.emit("startPrivateChat", {
         to: this.participant.cu_id,
         from: this.currentUser.uid,
@@ -319,7 +317,7 @@ export default {
         this.openIM(message[0]).then(() => {
           this.io.emit("acceptInvitationToPrivateChat", message[1]);
           // get chatRoomId when confirming invitation and  save it locally
-          console.log('onInvitationToPrivateChat',message[1])
+          // console.log('onInvitationToPrivateChat',message[1])
           this.chatRoom_id = message[1];
         });
       });
@@ -330,7 +328,7 @@ export default {
      */
     onIstyping() {
       this.io.on("isTyping", answer => {
-        console.log(answer);
+        // console.log(answer);
         this.isTyping = answer;
         this.timeOut = setTimeout(() => (this.isTyping = false), 10);
       });
@@ -340,8 +338,8 @@ export default {
      * it then decides to call startPrivateChat or sendToChat
      */
     sendMessage() {
-      console.log('this.messages.length:',this.messages.length);
-      console.log('this.chatRoom_id:', this.chatRoom_id);
+      // console.log('this.messages.length:',this.messages.length);
+      // console.log('this.chatRoom_id:', this.chatRoom_id);
       if (!this.invitationWasAccepted) {
         this.startPrivateChat();
       } else {

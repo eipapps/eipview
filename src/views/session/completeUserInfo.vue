@@ -53,7 +53,7 @@
           No fue posible seguir por las siguientes razones:
           <ul>
             <li
-              v-for="(error,i) in errors"
+              v-for="(error, i) in errors"
               :key="i"
             >
               {{ error }}
@@ -254,7 +254,7 @@
                   wrap
                 >
                   <v-text-field
-                    :value="computedDateFormattedMomentjs"
+                    :value="formatedDate"
                     clearable
                     label="Fecha de nacimiento"
                     readonly
@@ -272,7 +272,10 @@
               <v-date-picker
                 v-model="date"
                 color="#c6192a"
-                @change="menu2 = false;calculateAge();"
+                @change="
+                  menu2 = false;
+                  calculateAge();
+                "
               />
             </v-menu>
             <!-- date picker ends -->
@@ -282,7 +285,7 @@
             v-model="cedula"
             label="Cedula"
             hint="Escribe solo los numeros de tu cedula"
-            @keydown="onKeydown"
+            @keydown="onlyNumbersValidator"
             outlined
             type="tel"
             maxlength="13"
@@ -293,7 +296,7 @@
             v-model="phoneNumber"
             :value="auth().currentUser.phoneNumber"
             label="Teléfono"
-            @keydown="onKeydown"
+            @keydown="onlyNumbersValidator"
             outlined
             type="tel"
             maxlength="12"
@@ -337,9 +340,8 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import axios from "axios";
-import { async } from "q";
-import moment from "moment";
+import {checkForm, onlyNumbersValidator} from "./utils";
+import {format} from "date-fns";
 export default {
   name: "Editor",
   data() {
@@ -351,8 +353,8 @@ export default {
       provinceSelect: "",
       yourAge: "",
       center: "",
-      province: '',
-      region: '',
+      province: "",
+      region: "",
       date: null,
       menu2: false,
       gender: "",
@@ -386,21 +388,10 @@ export default {
               ageDate.getUTCFullYear() - 1970
             )} años?`;
     },
-     async fetchCenters() {
-        this.centers = await this.getCentersList();
+    async fetchCenters() {
+      this.centers = await this.getCentersList();
     },
-    onKeydown(event) {
-      const char = String.fromCharCode(event.keyCode);
-      if (
-        !/[0-9]/.test(char) &&
-        event.keyCode != Number.parseInt("08") &&
-        event.keyCode != Number.parseInt("09") &&
-        event.keyCode != Number.parseInt("39") &&
-        event.keyCode != Number.parseInt("37")
-      ) {
-        event.preventDefault();
-      }
-    },
+    onlyNumbersValidator: onlyNumbersValidator,
     formatPhoneNumber() {
       let s = this.phoneNumber;
       var s2 = ("" + s).replace(/\D/g, "");
@@ -427,71 +418,35 @@ export default {
         }/profilePicture/${this.auth().currentUser.displayName}`;
         const ref = await this.storage().ref(reference);
         // upload the photo
-        await ref.put(this.selectedFile).on("state_changed", async snapshot => {
-          //  make the progress element increment as data goes up
-          this.progress =
-            (await (snapshot.bytesTransferred / snapshot.totalBytes)) * 100;
-          //  display snackbar when upload is done
-          if (Math.ceil(this.progress) > 99) {
-            this.snackbar = true;
-            await this.storage()
-              .ref(reference)
-              .getDownloadURL()
-              .then(async url => {
-                this.photoURL = await url;
-                await this.auth().currentUser.updateProfile({
-                  photoURL: this.photoURL
+        await ref
+          .put(this.selectedFile)
+          .on("state_changed", async (snapshot) => {
+            //  make the progress element increment as data goes up
+            this.progress =
+              (await (snapshot.bytesTransferred / snapshot.totalBytes)) * 100;
+            //  display snackbar when upload is done
+            if (Math.ceil(this.progress) > 99) {
+              this.snackbar = true;
+              await this.storage()
+                .ref(reference)
+                .getDownloadURL()
+                .then(async (url) => {
+                  this.photoURL = await url;
+                  await this.auth().currentUser.updateProfile({
+                    photoURL: this.photoURL,
+                  });
+                  this.$root.$emit("changedPhoto");
+                })
+                .catch((err) => {
+                  throw new Error(`there was an Error ${err}`);
                 });
-                this.$root.$emit("changedPhoto");
-              })
-              .catch(err => {
-                throw new Error(`there was an Error ${err}`);
-              });
-          }
-        });
-      } catch (error) {}
+            }
+          });
+      } catch (error) {
+        // console.log(error)
+      }
     },
-    checkForm() {
-      let valid = true;
-      this.errors = [];
-      if (!this.cedula) {
-        this.errors.push("El numero de cedula es obligadorio.");
-        valid = false;
-      }
-       if (this.cedula.length <13) {
-        this.errors.push("Le faltan digitos a tu cedula de identidad.");
-        valid = false;
-      }
-      if (!this.phoneNumber) {
-        this.errors.push("Necesitamos tu numero de telefono.");
-        valid = false;
-      }
-      if (this.phoneNumber.length <12) {
-        this.errors.push("Le faltan digitos a tu numero telefonico.");
-        valid = false;
-      }
-      if (!this.gender) {
-        this.errors.push("especifica tu sexo.");
-        valid = false;
-      }
-      if (!this.regionSelect && !this.region) {
-        this.errors.push("tienes que seleccionar la region.");
-        valid = false;
-      }
-      if (!this.provinceSelect && !this.province) {
-        this.errors.push("tienes que seleccionar la provincia.");
-        valid = false;
-      }
-      if (!this.center) {
-        this.errors.push("tienes que seleccionar el centro.");
-        valid = false;
-      }
-      if (!this.date) {
-        this.errors.push("Falto tu fecha de Nacimiento.");
-        valid = false;
-      }
-      return valid;
-    },
+    checkForm: checkForm,
     async save() {
       try {
         if (this.checkForm()) {
@@ -505,38 +460,40 @@ export default {
             birthday: this.date,
             cedula: this.cedula,
             phone: this.phoneNumber,
-            region: (!this.regionSelect)? this.region: this.regionSelect,
-            province: (!this.provinceSelect)? this.province: this.provinceSelect,
-            center: this.center
+            region: !this.regionSelect ? this.region : this.regionSelect,
+            province: !this.provinceSelect
+              ? this.province
+              : this.provinceSelect,
+            center: this.center,
           };
           this.$store.commit("setContactInfo", localContactInfo);
-        await this.fillTeacherInfo()
-         .then(()=>{
-                this.successSnackbar = true;
-                this.saveMessage= 'Tu perfil ha sido creado satisfactoriamente'
+          await this.fillTeacherInfo()
+            .then(() => {
+              this.successSnackbar = true;
+              this.saveMessage = "Tu perfil ha sido creado satisfactoriamente";
             })
-         .then(this.timeout = setTimeout(()=> this.dialog = false, 4000))
-         .then(clearTimeout(this.timeOut))
-         .then(async()=>{
-          let role = await atob(localStorage.getItem('sessionRole'));
-              if (role == 'teacher') {
-                  await this.$router.push(`/teacherDashboard`);
-                            this.$emit('drawerRefresh');
-  
+            .then(
+              (this.timeout = setTimeout(() => (this.dialog = false), 4000))
+            )
+            .then(clearTimeout(this.timeOut))
+            .then(async () => {
+              let role = await atob(localStorage.getItem("sessionRole"));
+              if (role == "teacher") {
+                await this.$router.push(`/teacherDashboard`);
+                this.$emit("drawerRefresh");
               } else {
                 await this.$router.push(`/completeUserInfo`);
               }
-                })
-         .catch(()=>{
-           this.saveMessage= 'ha ocurrido un error al editar tu perfil. Intentalo mas tarde.'
-                this.successSnackbar = true;
+            })
+            .catch(() => {
+              this.saveMessage =
+                "ha ocurrido un error al editar tu perfil. Intentalo mas tarde.";
+              this.successSnackbar = true;
             });
         }
-      } catch (error) {
-        
-      }
+      } catch (error) {}
     },
-    ...mapActions(["fillTeacherInfo", "getProfileInfo", "getCentersList"])
+    ...mapActions(["fillTeacherInfo", "getProfileInfo", "getCentersList"]),
   },
   watch: {
     phoneNumber() {
@@ -548,7 +505,7 @@ export default {
     },
     regionSelect() {
       this.provinceSelect = "";
-      this.provinces = this.centers.map(item => {
+      this.provinces = this.centers.map((item) => {
         if (item.region.toUpperCase() == this.regionSelect.toUpperCase()) {
           return item.provincia;
         } else {
@@ -556,30 +513,30 @@ export default {
         }
       });
     },
- async   provinceSelect() {
-      this.recintos = await this.centers.map(item => {
+    async provinceSelect() {
+      this.recintos = await this.centers.map((item) => {
         if (item.provincia.toUpperCase() == this.provinceSelect.toUpperCase()) {
           return item.recintos;
         } else {
           return "";
         }
       });
-      this.recintos.push('otro')
-    }
+      this.recintos.push("otro");
+    },
   },
   computed: {
-    computedDateFormattedMomentjs() {
-      return this.date ? moment(this.date).format("dddd, MMMM Do YYYY") : "";
+    formatedDate() {
+      return this.date ? format(new Date(this.date),"dd, MMM, yyyy") : "";
     },
 
     initialize: function() {
       return this.auth()
         .currentUser.displayName.split(" ")
-        .map(n => n[0])
+        .map((n) => n[0])
         .join("")
         .toUpperCase();
     },
-    ...mapGetters(["auth", "storage", "closeableForm","id", "contactInfo"])
+    ...mapGetters(["auth", "storage", "closeableForm", "id", "contactInfo"]),
   },
   async created() {
     await this.fetchCenters();
@@ -588,20 +545,21 @@ export default {
 
     // set values from $store.contactInfo
     await this.getProfileInfo();
-    if(this.contactInfo){
-      this.cedula = (this.id)? this.id: this.contactInfo.cedula;
+    if (this.contactInfo) {
+      this.cedula = this.id ? this.id : this.contactInfo.cedula;
       this.gender = this.contactInfo.gender;
-      this.date =(this.contactInfo.birthday)? new Date(this.contactInfo.birthday).toISOString().substr(0, 10): null;
+      this.date = this.contactInfo.birthday
+        ? new Date(this.contactInfo.birthday).toISOString().substr(0, 10)
+        : null;
       this.phoneNumber = this.contactInfo.phone;
       this.region = this.contactInfo.region;
       this.province = this.contactInfo.province;
       this.center = this.contactInfo.center;
-
     }
-  }
+  },
 };
 </script>
-<style >
+<style>
 .stayPut {
   z-index: 1 !important;
   position: fixed !important;

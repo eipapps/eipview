@@ -260,7 +260,7 @@
                   wrap
                 >
                   <v-text-field
-                    :value="computedDateFormattedMomentjs"
+                    :value="formatedDate"
                     clearable
                     label="Fecha de nacimiento"
                     readonly
@@ -288,7 +288,7 @@
             v-model="cedula"
             label="Cedula"
             hint="Escribe solo los numeros de tu cedula"
-            @keydown="onKeydown"
+            @keydown="onlyNumbersValidator"
             outlined
             type="tel"
             maxlength="13"
@@ -299,7 +299,7 @@
             v-model="phoneNumber"
             :value="auth().currentUser.phoneNumber"
             label="Teléfono"
-            @keydown="onKeydown"
+            @keydown="onlyNumbersValidator"
             outlined
             type="tel"
             maxlength="12"
@@ -343,9 +343,9 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import axios from "axios";
-import { async } from "q";
-import moment from "moment";
+
+import {format} from 'date-fns'
+import { onlyNumbersValidator } from './utils';
 export default {
   name: "Editor",
   props: ["profileEditor"],
@@ -395,18 +395,7 @@ export default {
     async fetchCenters() {
         this.centers = await this.getCentersList();
     },
-    onKeydown(event) {
-      const char = String.fromCharCode(event.keyCode);
-      if (
-        !/[0-9]/.test(char) &&
-        event.keyCode != Number.parseInt("08") &&
-        event.keyCode != Number.parseInt("09") &&
-        event.keyCode != Number.parseInt("39") &&
-        event.keyCode != Number.parseInt("37")
-      ) {
-        event.preventDefault();
-      }
-    },
+    onlyNumbersValidator: onlyNumbersValidator,
     formatPhoneNumber() {
       let s = this.phoneNumber;
       var s2 = ("" + s).replace(/\D/g, "");
@@ -574,8 +563,8 @@ export default {
     }
   },
   computed: {
-    computedDateFormattedMomentjs() {
-      return this.date ? moment(this.date).format("dddd, MMMM Do YYYY") : "";
+    formatedDate() {
+      return this.date ? format(new Date(this.date),"dd, MMM yyyy") : "";
     },
 
     initialize: function() {

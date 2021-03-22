@@ -279,7 +279,7 @@
                 <span class="black--text caption">
                   <span>{{ item.name }}</span>
                   |
-                  {{ moment(item.date) }}
+                  {{ dateFromNow(item.date) }}
                 </span>
                 <br>
                 <span class="pt-2 black--text">{{ item.body }}</span>
@@ -293,11 +293,10 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import moment from "moment";
+import { mapGetters } from "vuex";
 import axios from "axios";
-import session from "@/store/modules/session.js";
 import { directive as onClickaway } from "vue-clickaway";
+import { dateFromNow } from '../../views/session/utils';
 export default {
   directives: {
     onClickaway: onClickaway
@@ -357,11 +356,7 @@ export default {
       }
       return valid;
     },
-    moment(date) {
-      return moment(date)
-        .locale("es")
-        .fromNow();
-    },
+   dateFromNow: dateFromNow,
     initialize(name) {
       return name
         .split(" ")

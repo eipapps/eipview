@@ -122,7 +122,7 @@
                   :class="(task.done)? 'strike': ''"
                 >{{ task.message }}</span>
               </template>
-              <span class="caption">creado el {{ moment(task.date) }}</span>
+              <span class="caption">creado el {{ formatedDate(task.date) }}</span>
             </v-tooltip>
             <v-btn
               @click="removeTask(task)"
@@ -169,8 +169,9 @@
   </v-card>
 </template>
 <script>
-import moment from "moment";
+
 import { mapGetters } from "vuex";
+import format from 'date-fns/format/index';
 export default {
   name: "Tasks",
   data() {
@@ -225,10 +226,8 @@ export default {
          this.tasks =  this.tasks.sort((a, b) => a.done - b.done);
       });
     },
-    moment(date) {
-      return moment(date)
-        .locale("es")
-        .format(" D MMMM YYYY, hh:mma");
+    formatedDate(date) {
+      return format(new Date(date), " d MMMM YYYY, hh:mma");
     }
   },
   computed: {

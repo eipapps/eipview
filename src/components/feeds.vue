@@ -50,7 +50,7 @@
                   <v-list-tile-sub-title
                     v-html="item.body"
                   />
-                  <span class="body-2"><span class="black--text">{{ item.name }}</span>  | {{ moment(item.date) }}</span>
+                  <span class="body-2"><span class="black--text">{{ item.name }}</span>  | {{ dateFromNow(item.date) }}</span>
                 </v-list-tile-content>
               </a>
             </v-list-tile>
@@ -64,7 +64,9 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { directive as onClickaway } from "vue-clickaway";
-import moment from 'moment'
+import {formatDistanceToNow} from 'date-fns'
+import { dateFromNow } from '../views/session/utils';
+
 export default {
   directives: {
     onClickaway: onClickaway
@@ -93,9 +95,7 @@ export default {
       this.$store.commit('setFeeds', []);
       this.$root.$emit('removeBadget');
     },
-    moment(date){
-      return moment(date).fromNow();
-    },
+    dateFromNow: dateFromNow,
     ...mapActions([ "markAsRead", 'fetchFeeds'])
   },
   computed: {
