@@ -126,8 +126,9 @@
 </template>
 <script>
 import { mapActions } from "vuex";
-import moment from "moment";
+
 import socket from "socket.io-client";
+import { dateFromNow } from '../session/utils';
 
 export default {
   data() { 
@@ -139,9 +140,7 @@ export default {
   methods: {
     ...mapActions(["getMember"]),
     fromNow() {
-      return moment(this.member.created_date, "YYYYMMDD")
-        .locale("es")
-        .fromNow();
+      return dateFromNow(this.member.created_date)
     },
     calculateAge() {
       let ageDifMs = Date.now() - Date.parse(this.member.birthday);

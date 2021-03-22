@@ -428,10 +428,9 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import moment from "moment";
 import axios from "axios";
-import session from "@/store/modules/session.js";
 import waiting from "@/components/loading.vue";
+import { dateFormater } from '../session/utils';
 export default {
   name: "SolicitarPermiso",
   components: { waiting },
@@ -675,17 +674,11 @@ export default {
           }
         });
     },
-    dateFormater(d) {
-      return d
-        ? moment(d)
-            .locale("es")
-            .format("dddd, MMMM D YYYY")
-        : "";
-    },
+    dateFormater:dateFormater,
 
     async setEditingMode(copy_req) {
       if (copy_req.test_date) {
-        copy_req.test_date = await moment(copy_req.test_date)
+        copy_req.test_date = new Date(copy_req.test_date)
           .toISOString()
           .substr(0, 10);
       }

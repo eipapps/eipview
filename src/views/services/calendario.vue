@@ -96,9 +96,9 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import moment from "moment";
+import { mapActions } from "vuex";
 import loading from "@/components/loading.vue";
+import { dateFromNow } from '../session/utils';
 
 export default {
   components: { loading },
@@ -132,7 +132,7 @@ export default {
       return new Date().getFullYear();
     },
     ago(time) {
-      return moment(time, "YYYYMMDD").fromNow();
+      return dateFromNow(time);
     },
     // set the number of pages based on the result of the calculation
     setPages() {
