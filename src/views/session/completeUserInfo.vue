@@ -525,9 +525,7 @@ export default {
     },
   },
   computed: {
-    formatedDate() {
-      return this.date ? format(new Date(this.date),"dd, MMM, yyyy") : "";
-    },
+    formatedDate,
 
     initialize: function() {
       return this.auth()
