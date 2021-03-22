@@ -3,14 +3,14 @@ import App from './App.vue'
 import store from './store'
 import router from './router'
 import Vuetify from 'vuetify'
-import {auth} from 'firebase/app';
-import './store/modules/firebaseInit'; 
+import { auth } from 'firebase/app';
+import './store/modules/firebaseInit';
 
 Vue.config.productionTip = false;
 
 let app;
-auth().onAuthStateChanged((user)=>{
-  if(!app){
+auth().onAuthStateChanged((user) => {
+  if (!app) {
     app = new Vue({
       store,
       router,
@@ -18,7 +18,7 @@ auth().onAuthStateChanged((user)=>{
     }).$mount('#app')
   }
 })
-Vue.use(Vuetify, {iconfont: 'md',}) 
+Vue.use(Vuetify, { iconfont: 'md', })
 
 
 router.beforeEach((to, from, next) => {

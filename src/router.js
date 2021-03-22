@@ -11,18 +11,18 @@ let router = new Router({
   base: "",
   routes: [
     {
-      
+
       path: "/",
       name: "home",
       component: Home,
-      meta:{
+      meta: {
         title: 'Pagina Principal - DLE MESCyT',
       }
     },
     {
       path: "/about",
       name: "about",
-      meta:{
+      meta: {
         title: 'Acerca de TEACHEIP.com - DLE MESCyT',
       },
       // which is lazy-loaded when the route is visited.
@@ -32,7 +32,7 @@ let router = new Router({
     {
       path: "/testimonials",
       name: "testimonials",
-      meta:{
+      meta: {
         title: 'Acerca de TEACHEIP.com - DLE MESCyT',
       },
       // which is lazy-loaded when the route is visited.
@@ -232,7 +232,7 @@ let router = new Router({
           /* webpackChunkName: "about" */ "./views/session/ProfileEditorView.vue"
         ),
       meta: {
-        
+
         requiresAuth: true,
         resquiresValidation: true
       }
@@ -345,18 +345,18 @@ let router = new Router({
     {
       path: "/403",
       name: "403",
-      meta:{
+      meta: {
         title: 'No tiene autorizacion para este espacio - DLE MESCyT',
-      }, 
+      },
       component: () =>
         import(/* webpackChunkName: "about" */ "./views/session/403.vue")
     },
     {
       path: "*",
       name: "404",
-      meta:{
+      meta: {
         title: 'No encontramos lo que busca - DLE MESCyT',
-      }, 
+      },
       component: () =>
         import(/* webpackChunkName: "about" */ "./views/session/404.vue")
     }
@@ -407,7 +407,7 @@ router.beforeEach((to, from, next) => {
         next();
       }
       // validate if is a Coordinator ends
-      
+
       // validate if is a teacher starts
       if (to.matched.some(record => record.meta.isTeacher)) {
         if (atob(user) == 'teacher') {

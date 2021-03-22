@@ -6,7 +6,7 @@
     <NavBar />
     <router-view />
     <Footer />
-    
+
     <!-- GLOBAL COMPONENTS START -->
     <feeds />
     <IM />
@@ -15,7 +15,6 @@
     <!-- GLOBAL COMPONENTS END -->
   </div>
 </template>
-
 
 <script>
 import "vuetify/dist/vuetify.min.css";
@@ -34,12 +33,12 @@ export default {
     connectionStatusAlert,
     Sugerencias,
     IM,
-    feeds
+    feeds,
   },
-  computed: mapGetters(["checkIsLoggedIn"])
+  computed: mapGetters(["checkIsLoggedIn"]),
+
 };
 </script>
-
 
 <style>
 [v-cloak] {
