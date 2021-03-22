@@ -77,17 +77,16 @@
   </div>
 </template>
 <script>
+import gify from "../assets/photos/giphy.gif";
 export default {
   data() {
     return {
-      gify:
-        "https://drive.google.com/uc?export=edit&id=15f32pnOCMq0pq_pjOl5Z_NN1MXcb8rDT"
+      gify
     };
   }
 };
 </script>
 <style scoped>
-/* @import url("https://fonts.googleapis.com/css?family=Lexend+Exa|Oswald&display=swap"); */
 .big-words {
   font-size: 110%;
   font-weight: lighter !important;

@@ -122,7 +122,7 @@
                   :class="(task.done)? 'strike': ''"
                 >{{ task.message }}</span>
               </template>
-              <span class="caption">creado el {{ formatedDate(task.date) }}</span>
+              <span class="caption">creado el {{ moment(task.date) }}</span>
             </v-tooltip>
             <v-btn
               @click="removeTask(task)"
@@ -226,8 +226,8 @@ export default {
          this.tasks =  this.tasks.sort((a, b) => a.done - b.done);
       });
     },
-    formatedDate(date) {
-      return format(new Date(date), " d MMMM YYYY, hh:mma");
+    moment(date) {
+      return format(new Date(date), " dd MMMM yyyy, hh:mma");
     }
   },
   computed: {

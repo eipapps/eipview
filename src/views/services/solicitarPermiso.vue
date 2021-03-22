@@ -47,7 +47,8 @@
             wrap
             class="red--text caption"
           >
-            Tomar en cuenta: No se puede editar ni borrar una solicitud despues de dos dias de haber sido creada.
+            Tomar en cuenta: No se puede editar ni borrar una solicitud despues
+            de dos dias de haber sido creada.
           </v-layout>
           <!-- WAITING STARTS -->
           <v-layout
@@ -117,8 +118,7 @@
               >
                 <v-icon small>
                   description
-                </v-icon>Subir constancia para el
-                permiso
+                </v-icon>Subir constancia para el permiso
               </v-btn>
               <input
                 v-show="false"
@@ -329,7 +329,7 @@
                     small
                     fab
                     class="slide sign-in"
-                    @click="deleteMode = false;"
+                    @click="deleteMode = false"
                   >
                     no
                   </v-btn>
@@ -349,7 +349,9 @@
                 <span
                   class="font-weight-bold"
                   contenteditable
-                >{{ item.body }}</span>
+                >{{
+                  item.body
+                }}</span>
               </span>
               <span class="my-1">
                 Nombre del solicitante:
@@ -357,11 +359,15 @@
               </span>
               <span class="my-1">
                 Desde:
-                <span class="font-weight-bold">{{ dateFormater(item.starts) }}</span>
+                <span class="font-weight-bold">{{
+                  dateFormater(item.starts)
+                }}</span>
               </span>
               <span class="my-1">
                 Hasta:
-                <span class="font-weight-bold">{{ dateFormater(item.ends) }}</span>
+                <span class="font-weight-bold">{{
+                  dateFormater(item.ends)
+                }}</span>
               </span>
               <v-card>
                 <span class="my-1">
@@ -377,7 +383,9 @@
 
               <span class="my-1">
                 Dia que fue solicitado:
-                <span class="font-weight-bold">{{ dateFormater(item.date) }}</span>
+                <span class="font-weight-bold">{{
+                  dateFormater(item.date)
+                }}</span>
               </span>
             </v-layout>
           </v-card>
@@ -412,10 +420,10 @@
 </template>
 
 <script>
-import { mapGetters, } from "vuex";
+import { mapGetters } from "vuex";
 import axios from "axios";
 import waiting from "@/components/loading.vue";
-import { dateFormater } from '../session/utils';
+import { dateFormater } from "../session/utils";
 export default {
   name: "SolicitarPermiso",
   components: { waiting },
@@ -438,7 +446,7 @@ export default {
       editingMode: false,
       deleteMode: false,
       si: false,
-      currentPermission: ""
+      currentPermission: "",
     };
   },
   methods: {
@@ -446,20 +454,20 @@ export default {
       if (this.validate()) {
         try {
           this.createPermissions()
-            .then(res => {
+            .then((res) => {
               this.snackbarMessage = res.data.message;
               this.snackbar = true;
               this.loading = false;
               return res;
             })
-            .then(async res => {
+            .then(async (res) => {
               if (res.data.status == 200) {
                 await this.getPermissions();
                 this.timeOut = await setTimeout(this.reset, 6000);
                 window.scrollTo(0, 1000);
               }
             })
-            .catch(err => {
+            .catch((err) => {
               throw new Error(`there was an Error ${err}`);
             });
           this.getPermissions();
@@ -472,20 +480,20 @@ export default {
       if (this.validate()) {
         try {
           this.requestEdit()
-            .then(async res => {
+            .then(async (res) => {
               this.snackbarMessage = await res.data.message;
               this.snackbar = true;
               this.loading = false;
               return res;
             })
-            .then(async res => {
+            .then(async (res) => {
               if (res.data.status == 200) {
                 await this.getPermissions();
                 this.timeOut = await setTimeout(this.reset, 6000);
                 window.scrollTo(0, 1000);
               }
             })
-            .catch(err => {
+            .catch((err) => {
               throw new Error(`there was an Error ${err}`);
             });
         } catch (error) {
@@ -499,20 +507,19 @@ export default {
       window.scrollTo(0, 0);
       try {
         this.deletePermission(permission)
-          .then(res => {
+          .then((res) => {
             this.snackbarMessage = res.data.message;
             this.snackbar = true;
             this.si = false;
             return res;
           })
-          .then(async res => {
+          .then(async (res) => {
             if (res.data.status == 200) {
-               await this.getPermissions();
+              await this.getPermissions();
               this.timeOut = await setTimeout(this.reset, 6000);
-             
             }
           })
-          .catch(err => {
+          .catch((err) => {
             throw new Error(`there was an Error ${err}`);
           });
       } catch (error) {
@@ -538,7 +545,9 @@ export default {
       } else {
         if (this.compareDates()) {
           this.errors.push(
-            `La fecha de inicio ${this.request.starts} es mayor a la fecha que termina el permiso ${this.request.starts}`
+            `La fecha de inicio ${
+              this.request.starts
+            } es mayor a la fecha que termina el permiso ${this.request.starts}`
           );
           valid = false;
         }
@@ -683,7 +692,7 @@ export default {
         }
       });
     },
-    dateFormater:dateFormater,
+    dateFormater: dateFormater,
     compareDates() {
       return this.request.starts >= this.request.ends;
     },
@@ -693,9 +702,7 @@ export default {
         permission.starts = new Date(permission.starts)
           .toISOString()
           .substr(0, 10);
-        permission.ends = new Date(permission.ends)
-          .toISOString()
-          .substr(0, 10);
+        permission.ends = new Date(permission.ends).toISOString().substr(0, 10);
       }
       this.request = permission;
       this.deleteMode = false;
@@ -705,20 +712,20 @@ export default {
     setDeleteMode(permission) {
       this.deleteMode = true;
       this.currentPermission = permission.permission_id;
-    }
+    },
   },
   beforeDestroy() {
     clearInterval(this.timeOut);
   },
   computed: {
-    ...mapGetters(["auth", "storage"])
+    ...mapGetters(["auth", "storage"]),
   },
   async created() {
     this.request.name = this.auth().currentUser.displayName;
     this.request.email = this.auth().currentUser.email;
     this.request.uid = this.auth().currentUser.uid;
-    this.request.date = new Date();
+    this.request.date = dateFormater(new Date());
     await this.getPermissions();
-  }
+  },
 };
 </script>
